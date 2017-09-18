@@ -23,7 +23,7 @@ STOCKS_TABLE_NAME = "stocks-test1"
 CLICK_LOGS_TABLE_NAME = 'click_logs'
 
 STOCKS_LIMIT = 100
-STOCKS_LIST_BATCH_SIZE = 10
+STOCKS_LIST_BATCH_SIZE = 20
 USER_STOCKS_TIME_OUT_IN_SECONDS = 60
 
 # LOG_CLICKS_TASK_QUEUE_URL = "amqp://erygdeea:mJdprUO-I6KpJNoyO18sx23FFQm1ouIX@donkey.rmq.cloudamqp.com/erygdeea"
@@ -60,7 +60,17 @@ def getStocksSummariesForUser(user_id, page_num):
 
     sliced_stocks = total_stocks[begin_index:end_index]
 
-    print(sliced_stocks)
+    # print(sliced_stocks)
+    result_stocks = []
+    for stock in sliced_stocks:
+        if 'history' in stock:
+            if len(stock['history']) > 100:
+                result_stocks.append(stock)
+
+    # begin_index = (page_num - 1) * 3
+    # end_index = page_num * 3
+    # result_stocks = result_stocks[begin_index:end_index]
+
     # Get preference for the user
     # preference = news_recommendation_service_client.getPreferenceForUser(user_id)
     # topPreference = None
@@ -76,7 +86,7 @@ def getStocksSummariesForUser(user_id, page_num):
     #     if news['publishedAt'].date() == datetime.today().date():
     #         news['time'] = 'today'
 
-    return json.loads(dumps(sliced_stocks))
+    return json.loads(dumps(result_stocks))
 
 
 # def logNewsClickForUser(user_id, news_id):

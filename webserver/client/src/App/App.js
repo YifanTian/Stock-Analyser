@@ -11,6 +11,7 @@ class App extends Component {
       <div>
       {/* <img className='logo' src={logo} alt='logo'/> */}
         <div className="container">
+          Author: Yifan Tian
           <StocksPanel />
         </div>
       </div>

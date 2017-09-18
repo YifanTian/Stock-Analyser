@@ -2,7 +2,7 @@ import yahoo_api_client as client
 
 def test_basic():
     stocks = client.getStocksFromSource()
-    print(stocks)
+    # print(stocks)
     print(len(stocks))
     assert len(stocks) > 0
     print('test_basic passed')

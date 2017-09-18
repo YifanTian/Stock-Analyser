@@ -42,7 +42,7 @@ history = []
 for i,day in enumerate(yf_data[1:-1]):
     data = day.split(',')
     print(data)
-    print(str(data[0]),float(data[1]))
-    history.append([i,str(data[0]),float(data[1])])
+    print(str(data[0]),float(data[1]),float(data[2]),float(data[3]),float(data[4]),float(data[6]))
+    history.append([i,str(data[0]),float(data[1]),float(data[2]),float(data[3]),float(data[4]),float(data[6])])
 
 print(history)

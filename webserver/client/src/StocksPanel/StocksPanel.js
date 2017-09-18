@@ -3,11 +3,20 @@ import React from 'react';
 import StocksCard from '../StocksCard/StocksCard';
 import _ from 'lodash';
 
+import { tsvParse, csvParse } from  "d3-dsv";
+import { timeParse } from "d3-time-format";
+
+import { getData } from "../utils";
+import Chart from '../Chart';
+import { TypeChooser } from "react-stockcharts/lib/helper";
+
+const parseDate = timeParse("%Y-%m-%d");
+
 class StocksPanel extends React.Component {
   
   constructor() {
     super();
-    this.state = { stocks:null, pageNum:1, loadedAll:false };
+    this.state = { stocks:null, pageNum:1, loadedAll:false, data:null };
     this.handleScroll = this.handleScroll.bind(this);
   }
 
@@ -27,48 +36,11 @@ class StocksPanel extends React.Component {
     }
   }
 
-
-    // print(share.get_open())
-    // print(share.get_price())
-    // print(share.get_trade_datetime())
-    // print(share.get_volume())
-    // print(share.get_avg_daily_volume())
-    // print(share.get_days_high())
-    // print(share.get_days_low())
-
     loadMoreStocks() {
-        // console.log(this.state.stocks);
-        // this.setState({
-        //     stocks:[
-        //         {
-        //             'url':'',
-        //             'title':'AGTC',
-        //             'open': 4.7,
-        //             'price': 4.8,
-        //             'volume': 45239,
-        //             'trade_datetime': '2017-09-07 20:00:00 UTC+0000',
-        //             'reason':'recommand'
-        //         },
-        //         {
-        //             'url':'',
-        //             'title':'AGTC',
-        //             'open': 4.7,
-        //             'price': 4.8,
-        //             'volume': 45239,
-        //             'trade_datetime': '2017-09-07 20:00:00 UTC+0000',
-        //             'reason':'hot'
-        //         }]
-        // });
-
-        // let url = 'http://localhost:3000/news/userId/' + Auth.getEmail()
-        // + '/pageNum/' + this.state.pageNum;
-
-        // let url = 'http://localhost:3000/stocks/userId/' + 'yifant'
-        // + '/pageNum/' + this.state.pageNum;
 
         console.log(this.state.pageNum);
 
-        let url = 'http://localhost:4000/stocks/userId/yifant/pageNum/1';
+        let url = 'http://localhost:4000/stocks/userId/yifant/pageNum/' + this.state.pageNum;
 
         console.log(url);
 
@@ -85,36 +57,104 @@ class StocksPanel extends React.Component {
             stocks:this.state.stocks ? this.state.stocks.concat(stocks) : stocks,
             pageNum: this.state.pageNum + 1
             });
-        });
+        })
 
     }
 
     renderStocks() {
+
+        let num = 0;
         const stocks_list = this.state.stocks.map(function(stocks) {
 
+            console.log(stocks);
 
-
-            console.log(stocks.history);
+            num += 1;
             if (! (typeof stocks.history === "undefined")) {
-                stocks.history = stocks.history.map((day)=>[day[0],day[2]]);
+                stocks.history = stocks.history.map((day) => {
+                    return {
+                            date: parseDate(day[1]),
+                            open: day[2],
+                            high: day[3],
+                            low: day[4],
+                            close: day[5],
+                            volume: day[6] 
+                        }
+                    });
+                console.log(stocks.history);
             }
-            // } else {
-            //     stocks.history = [];
-            // }
 
-            // stocks.history = [
-            //         [ 10, 490 ],
-            //         [ 140, 380 ],
-            //         [ 310, 420 ],
-            //         [ 490, 10 ]
-            //     ];
-            console.log(stocks.history);
 
-            return(
-                <a className='list-group-item' href='#'>
-                    <StocksCard stocks={stocks} />
-                </a>
-            );
+            // let CommentList = (
+
+                // stocks.new_StockTwits_comments.map(function(comment) {
+
+                //     return(
+                //         <a className='list-group-item' href='#'>
+                //             { comment.created_at }
+                //         </a>
+                //     )
+
+                // });
+
+            // );
+
+            if(!(typeof stocks.new_StockTwits_comments === "undefined")) {
+
+                let commentsList = stocks.new_StockTwits_comments.splice(0,3).map(function(comment) {
+                    
+                                        return(
+                                            <a className='collection-item' href='#'>
+                                                <li> { comment.body } </li>
+                                                <br/>
+                                            </a>
+                                        )
+                    
+                                    });
+
+                console.log(stocks.new_StockTwits_comments);
+
+                return(
+                    // <div className="container">
+                        <a className='list-group-item' href='#'>
+                            <StocksCard stocks={stocks} />
+                            <div className="row">
+                                <div className="col s8">
+                                    <TypeChooser>
+                                        {type => <Chart type={type} data={ stocks.history } />}
+                                    </TypeChooser> 
+                                </div>
+                                <div className="col s4">
+
+                                    {/* <StocksCard stocks={stocks} /> */}
+                                    {/* { stocks.new_StockTwits_comments } */}
+                                    {/* Comments: { stocks.new_StockTwits_comments.length } */}
+                                    
+                                    
+                                    <ul class="collection with-header">
+                                        <li class="collection-header"><h4>Comments:</h4></li>
+                                        { commentsList }
+                                    </ul>
+                                </div>
+                            </div>
+                            {/* <StocksCard stocks={stocks} /> */}
+                            =====================================================================
+                        </a>
+                        // <br/>
+                    // </div>
+                );
+            } else {
+                return(
+                    <a className='list-group-item' href='#'>
+                        <StocksCard stocks={stocks} />
+                        {/* <TypeChooser>
+                            {type => <Chart type={type} data={ stocks.history } />}
+                        </TypeChooser>  */}
+                        {/* <StocksCard stocks={stocks} /> */}
+                        =====================================================================
+                    </a>
+                );
+            }
+
         });
 
         return(
@@ -133,6 +173,9 @@ class StocksPanel extends React.Component {
                 <div>
                     {this.renderStocks()}
                 </div>
+                // <TypeChooser>
+                //     {type => <Chart type={type} data={this.state.data.splice(1,80)} />}
+                // </TypeChooser> 
             );
         } else {
             return(

@@ -1,19 +1,14 @@
 from yahoo_finance import Share
 import yqd
 import json
+import requests
 
 # yahoo = Share('AAPL')
-
 # print(yahoo.get_open())
-
 # print(yahoo.get_price())
-
 # print(yahoo.get_trade_datetime())
-
 # print(yahoo.get_historical('2014-04-25', '2014-04-29'))
-
 # from pprint import pprint
-
 # print(yahoo.get_historical('2017-04-25', '2017-04-29'))
 
 import pandas as pd
@@ -37,41 +32,62 @@ SORT_BY_TOP = 1                                                     # according 
 #     print(share.get_days_low())
 #     print()
 
-def getStocksFromSource(indexes=data, sortBy=SORT_BY_TOP):
-    stocks = []
+# ================================================ custom index sheet ==================
 
+# data = [
+
+
+
+# ]
+
+
+def getStocksFromSource(indexes=data, sortBy=SORT_BY_TOP):
+    ''' '''
+    stocks = []
     for stock in data["Ticker"][:50]:
         try:
             print(stock)
             print(type(stock))
-            yf_data = yqd.load_yahoo_quote(stock, '20170801', '20170830')
+            yf_data = yqd.load_yahoo_quote(stock, '20170301', '20170830')
             # yf_data = yqd.load_yahoo_quote('ABEO', '20170712', '20170725')
             # print(yf_data)
             share = Share(stock)
 
+            # history part
             history = []
             for i,day in enumerate(yf_data[1:-1]):
                 daily_data = day.split(',')
-                history.append([i,str(daily_data[0]),float(daily_data[1])])
+                history.append([i,str(daily_data[0]),float(daily_data[1]),float(daily_data[2]),float(daily_data[3]),float(daily_data[4]),float(daily_data[6])])
+            
+            # comments part
+            comments = []
+            url = 'https://api.stocktwits.com/api/2/streams/symbol/{0}.json'.format(stock)
+            print(url)
+            r = requests.get(url).json()
+            new_StockTwits_comments = [{'id': message['id'], 'body': message['body'], 'created_at': message['created_at']} for message in r['messages']]
 
-            # stock = {'index':stock}
+            print(new_StockTwits_comments)
 
-            stock = {'index':stock,
-                    'open':share.get_price(),
-                    'price':share.get_price(),
-                    'volume':share.get_volume(),
-                    'trade_datetime':share.get_trade_datetime(),
-                    'avg_daily_volume':share.get_avg_daily_volume(),
-                    'history':history}
+            stock = {
+                        'index':stock,
+                        'open':share.get_open(),
+                        'change':share.get_change(),
+                        'percent_change':share.get_percent_change(),
+                        'prev_close':share.get_prev_close(),
+                        'price':share.get_price(),
+                        'volume':share.get_volume(),
+                        'history':history,
+                        'new_StockTwits_comments':new_StockTwits_comments
+                    }
             # stock_json = json.dumps(stock)
             # print(type(stock_json))
-            stocks.append(stock)
+            if len(history) != 0:
+                stocks.append(stock)
         except Exception as e:
+            print(e)
             pass
     print(len(stocks))
     return stocks
-
-
 
 # get_price()
 # get_change()
