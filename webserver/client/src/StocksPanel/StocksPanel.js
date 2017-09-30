@@ -1,7 +1,12 @@
+import 'materialize-css/dist/css/materialize.min.css';
+import 'materialize-css/dist/js/materialize.js';
+
 import './StocksPanel.css';
 import React from 'react';
 import StocksCard from '../StocksCard/StocksCard';
 import _ from 'lodash';
+import 'materialize-css/dist/css/materialize.min.css';
+import { Link } from 'react-router'
 
 import { tsvParse, csvParse } from  "d3-dsv";
 import { timeParse } from "d3-time-format";
@@ -14,8 +19,8 @@ const parseDate = timeParse("%Y-%m-%d");
 
 class StocksPanel extends React.Component {
   
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { stocks:null, pageNum:1, loadedAll:false, data:null };
     this.handleScroll = this.handleScroll.bind(this);
   }
@@ -27,20 +32,24 @@ class StocksPanel extends React.Component {
   }
 
   handleScroll() {
-    let scrollY = window.scrollY ||
-                  window.pageYOffset ||
-                  document.documentElement.scrollTop;
-    if ((window.innerHeight + scrollY) >= (document.body.offsetHeight - 50)) {
-      console.log('Loading more news');
-      this.loadMoreStocks();
-    }
+    // let scrollY = window.scrollY ||
+    //               window.pageYOffset ||
+    //               document.documentElement.scrollTop;
+    // if ((window.innerHeight + scrollY) >= (document.body.offsetHeight - 50)) {
+    //   console.log('Loading more news');
+    //   this.loadMoreStocks();
+    // }
   }
 
     loadMoreStocks() {
 
-        console.log(this.state.pageNum);
+        if (typeof (this.props.params.pageNum) === "undefined") {
+            this.props.params.pageNum = 1;
+        }
 
-        let url = 'http://localhost:4000/stocks/userId/yifant/pageNum/' + this.state.pageNum;
+        // let url = 'http://localhost:4000/stocks/userId/yifant/pageNum/' + this.state.pageNum;
+
+        let url = 'http://localhost:4000/stocks/userId/yifant/pageNum/' + this.props.params.pageNum;
 
         console.log(url);
 
@@ -58,7 +67,10 @@ class StocksPanel extends React.Component {
             pageNum: this.state.pageNum + 1
             });
         })
+    }
 
+    activateLasers() {
+        console.log("pagination");
     }
 
     renderStocks() {
@@ -83,20 +95,13 @@ class StocksPanel extends React.Component {
                 console.log(stocks.history);
             }
 
+            var styles1 = {
+                color:'red',
+            };
 
-            // let CommentList = (
-
-                // stocks.new_StockTwits_comments.map(function(comment) {
-
-                //     return(
-                //         <a className='list-group-item' href='#'>
-                //             { comment.created_at }
-                //         </a>
-                //     )
-
-                // });
-
-            // );
+            var styles2 = {
+                color:'green',
+            };
 
             if(!(typeof stocks.new_StockTwits_comments === "undefined")) {
 
@@ -104,8 +109,23 @@ class StocksPanel extends React.Component {
                     
                                         return(
                                             <a className='collection-item' href='#'>
-                                                <li> { comment.body } </li>
-                                                <br/>
+                                                <li> 
+                                                    {/* Comment: <p> { comment.body } </p> 
+                                                    <br/> */}
+                                                     <p> { comment.core_body } </p>
+                                                    <p> 
+                                                        {/* NLTK: { comment.nltk_sentiment } &nbsp;&nbsp;&nbsp; */}
+                                                        {
+                                                            comment.nltk_sentiment=="negative"? <h6 style={styles1}> NLTK:  { comment.nltk_sentiment } </h6> : <h6 style={styles2}> NLTK: { comment.nltk_sentiment } </h6>
+                                                        }
+                                                        {
+                                                            comment.azure_sentiment>0.5?  <h6 style={styles1}> Azure:  { comment.azure_sentiment } </h6> : <h6 style={styles2}> Azure: { comment.azure_sentiment } </h6>
+                                                        }
+                                                          {/* <p style={styles}> { comment.azure_sentiment } </p> */}
+                                                     </p>
+                                                    {/* Azure: <p> { comment.azure_sentiment } </p> */}
+                                                </li> 
+                                                <br/> 
                                             </a>
                                         )
                     
@@ -117,27 +137,29 @@ class StocksPanel extends React.Component {
                     // <div className="container">
                         <a className='list-group-item' href='#'>
                             <StocksCard stocks={stocks} />
-                            <div className="row">
-                                <div className="col s8">
+                            <div className="stock-panel">
+                                <div className="col s10">
                                     <TypeChooser>
                                         {type => <Chart type={type} data={ stocks.history } />}
                                     </TypeChooser> 
                                 </div>
-                                <div className="col s4">
+                                <div className="col s10">
 
                                     {/* <StocksCard stocks={stocks} /> */}
                                     {/* { stocks.new_StockTwits_comments } */}
                                     {/* Comments: { stocks.new_StockTwits_comments.length } */}
-                                    
-                                    
-                                    <ul class="collection with-header">
-                                        <li class="collection-header"><h4>Comments:</h4></li>
+                                                                  
+                                    <ul className="collection with-header">
+                                        <li className="collection-header"><h5>Comments:</h5></li>
                                         { commentsList }
                                     </ul>
                                 </div>
+
+                            {/* <a class="waves-effect waves-light btn" onClick={}>Details</a> */}
+    <Link className="waves-effect waves-light btn" to="stock/AAPL" params={{stockIndex:'AAPL'}}>Details</Link>
                             </div>
                             {/* <StocksCard stocks={stocks} /> */}
-                            =====================================================================
+
                         </a>
                         // <br/>
                     // </div>
@@ -171,7 +193,24 @@ class StocksPanel extends React.Component {
         if(this.state.stocks) {
             return(
                 <div>
+                    <div className="stock-panel">
                     {this.renderStocks()}
+
+                    {/* <a className="waves-effect waves-light btn" onClick={this.activateLasers}>Next page</a> */}
+                    <ul className="pagination">
+                        <li className="disabled"><a href="#!"><i className="material-icons">chevron_left</i></a></li>
+                        {/* <li className="active" ><a href="/1">1</a></li> */}
+                        <li className="waves-effect"><a href="/1">1</a></li>
+                        <li className="waves-effect"><a href="/2">2</a></li>
+                        <li className="waves-effect"><a href="/3">3</a></li>
+                        <li className="waves-effect"><a href="#!">4</a></li>
+                        <li className="waves-effect"><a href="#!">5</a></li>
+                        <li className="waves-effect"><a href="#!">
+                        <i className="material-icons">chevron_right</i></a></li>
+                    </ul>
+                    {/* <Link to='/:pagNum' component={ StocksPanel } /> */}
+
+                    </div>
                 </div>
                 // <TypeChooser>
                 //     {type => <Chart type={type} data={this.state.data.splice(1,80)} />}

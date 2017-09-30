@@ -18,12 +18,16 @@ r = requests.get(url).json()
 # print(r['response'])
 
 
-print(type(r['messages']))                      # list of tweets
+# print(type(r['messages']))                      # list of tweets
 
-print(type('abc'.decode('utf-8')))
+# print(type('abc'.decode('utf-8')))
 
-print(r['messages'][0].keys()[0])
+# print(r['messages'][0].keys()[0])
 
+# print(r['messages'][1]['body'])
+
+
+'''
 # body_key = r['messages'].values()[0]
 
 for item in r['messages']:
@@ -40,11 +44,22 @@ for item in r['messages']:
     print()
     # item[body_key]
     # print(item.values()[0])
-
+'''
 
 # for item in r:
 #     print(r[item])
 # pprint(r)
+
+
+
+
+
+
+
+
+
+
+
 
 # Returns the most recent 30 messages with trending symbols in the last 5 minutes.
 # url = 'https://api.stocktwits.com/api/2/streams/trending.json'

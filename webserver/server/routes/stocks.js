@@ -55,6 +55,16 @@ router.get('/userId/:userId/pageNum/:pageNum', function(req, res, next) {
   });
 });
 
+router.get('/userId/:userId/stockIndex/:stockIndex', function(req, res, next) {
+  console.log('Fetching stocks...');
+  user_id = req.params['userId'];
+  index = req.params['stockIndex'];
+
+  rpc_client.getStockForUser(user_id, index, function(response) {
+    res.json(response);
+  });
+});
+
 // /* Log news click. */
 // router.post('/userId/:userId/newsId/:newsId', function(req,res, next) {
 //   console.log('Logging news click...');

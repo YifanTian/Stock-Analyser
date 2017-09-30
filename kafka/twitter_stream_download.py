@@ -42,7 +42,9 @@ class MyListener(StreamListener):
         try:
             with open(self.outfile, 'a') as f:
                 f.write(data)
-                print(data)
+                # print(data.find('text'))
+                # print(data.find('source'))
+                print(data[109:data.find('source')-3])
                 return True
         except BaseException as e:
             print("Error on_data: %s" % str(e))

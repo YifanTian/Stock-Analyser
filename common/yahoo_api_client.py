@@ -1,7 +1,14 @@
 from yahoo_finance import Share
 import yqd
 import json
+import os
 import requests
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'sentiment'))
+
+import nltk_service
+import azure_sentiment_service
 
 # yahoo = Share('AAPL')
 # print(yahoo.get_open())
@@ -35,19 +42,53 @@ SORT_BY_TOP = 1                                                     # according 
 # ================================================ custom index sheet ==================
 
 # data = [
-
-
-
 # ]
 
+data = [
+    'AAPL',
+    'AXP',
+    'BA',
+    'CAT',
+    'CSCO',
+    'CVX',
+    'DIS',
+    'DWDP',
+    'GE',
+    'GS',
+    'HD',
+    'IBM',
+    'INTC',
+    'JNJ',
+    'JPM',
+    'KO',
+    'MCD',
+    'MMM',
+    'MRK',
+    'MSFT',
+    'NKE',
+    'PFE',
+    'PG',
+    'TRV',
+    'UNH',
+    'UTX',
+    'V',
+    'VZ',
+    'WMT',
+    'XOM'
+]
+
+# f = open('/home/yifantian/Desktop/bittigercs503-1703/capstone1/common/stocks_success_index.txt','w')
 
 def getStocksFromSource(indexes=data, sortBy=SORT_BY_TOP):
     ''' '''
     stocks = []
-    for stock in data["Ticker"][:50]:
+    index = ['AGTC']
+    # for stock in data["Ticker"][:100]:
+    # for stock in index:
+    for stock in data:
         try:
             print(stock)
-            print(type(stock))
+            # print(type(stock))
             yf_data = yqd.load_yahoo_quote(stock, '20170301', '20170830')
             # yf_data = yqd.load_yahoo_quote('ABEO', '20170712', '20170725')
             # print(yf_data)
@@ -59,15 +100,41 @@ def getStocksFromSource(indexes=data, sortBy=SORT_BY_TOP):
                 daily_data = day.split(',')
                 history.append([i,str(daily_data[0]),float(daily_data[1]),float(daily_data[2]),float(daily_data[3]),float(daily_data[4]),float(daily_data[6])])
             
+            # print(history)
             # comments part
             comments = []
+            new_StockTwits_comments = []
             url = 'https://api.stocktwits.com/api/2/streams/symbol/{0}.json'.format(stock)
             print(url)
-            r = requests.get(url).json()
-            new_StockTwits_comments = [{'id': message['id'], 'body': message['body'], 'created_at': message['created_at']} for message in r['messages']]
+            try:
+                r = requests.get(url).json()
+                print(len(r['messages']))
+                for message in r['messages']:
+                    try:
+                        new_tweet = {
+                            'id': message['id'], 
+                            'body': message['body'], 
+                            'created_at': message['created_at'],
+                            'core_body': nltk_service.clean_tweet(message['body']),
+                            'nltk_sentiment': nltk_service.get_tweet_sentiment(message['body']),
+                            # 'azure_sentiment': azure_sentiment_service.GetSentiment(message['body'])
+                        }
+                        try:
+                            new_tweet['azure_sentiment'] = azure_sentiment_service.GetSentiment(message['body'])
+                        except Exception as e:
+                            new_tweet['azure_sentiment'] = 0.5
+                            print(e)
+                        # print(new_tweet['azure_sentiment'])
+                        new_StockTwits_comments.append(new_tweet)
+                    except Exception as e:
+                        print(e)
+                        # pass
+            except Exception as e:
+                print('stock tweets part problem')
+                print(e)
+            # new_StockTwits_comments = [{'id': message['id'], 'body': message['body'], 'created_at': message['created_at']} for message in r['messages']]
 
-            print(new_StockTwits_comments)
-
+            print(len(new_StockTwits_comments))
             stock = {
                         'index':stock,
                         'open':share.get_open(),
@@ -81,13 +148,17 @@ def getStocksFromSource(indexes=data, sortBy=SORT_BY_TOP):
                     }
             # stock_json = json.dumps(stock)
             # print(type(stock_json))
+            print(len(history))
             if len(history) != 0:
+                # f.write(stock['index']+'/n')
                 stocks.append(stock)
         except Exception as e:
             print(e)
             pass
     print(len(stocks))
     return stocks
+
+# f.close()
 
 # get_price()
 # get_change()

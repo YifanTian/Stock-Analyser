@@ -11,6 +11,11 @@ svg {
 
 /*  */
 
+.stock {
+  margin: auto;
+  width: 80%;
+}
+
 .news-intro-col {
   display: inline-flex;
   color: black;

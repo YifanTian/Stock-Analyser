@@ -20,10 +20,11 @@ REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 
 STOCKS_TABLE_NAME = "stocks-test1"
+TWEETS_TABLE_NAME = "stocks-tweets"
 CLICK_LOGS_TABLE_NAME = 'click_logs'
 
 STOCKS_LIMIT = 100
-STOCKS_LIST_BATCH_SIZE = 20
+STOCKS_LIST_BATCH_SIZE = 10
 USER_STOCKS_TIME_OUT_IN_SECONDS = 60
 
 # LOG_CLICKS_TASK_QUEUE_URL = "amqp://erygdeea:mJdprUO-I6KpJNoyO18sx23FFQm1ouIX@donkey.rmq.cloudamqp.com/erygdeea"
@@ -66,6 +67,7 @@ def getStocksSummariesForUser(user_id, page_num):
         if 'history' in stock:
             if len(stock['history']) > 100:
                 result_stocks.append(stock)
+                # print(stock['new_StockTwits_comments'][0].keys())
 
     # begin_index = (page_num - 1) * 3
     # end_index = page_num * 3
@@ -87,6 +89,19 @@ def getStocksSummariesForUser(user_id, page_num):
     #         news['time'] = 'today'
 
     return json.loads(dumps(result_stocks))
+
+def getStockForUser(user_id, stock):
+    db = mongodb_client.get_db()
+    result_stock = list(db[STOCKS_TABLE_NAME].find({'index':stock}))[0]
+    result_tweets = list(db[TWEETS_TABLE_NAME].find().sort([('digest', -1)]).limit(50))
+    # return json.loads(dumps(result_stock))
+    # print(type(result_stock))
+    result_stock['twitter_tweets'] = result_tweets
+    return json.loads(dumps(result_stock))
+
+if __name__ == '__main__':
+    print(getStockForUser(1,'IBM'))
+
 
 
 # def logNewsClickForUser(user_id, news_id):

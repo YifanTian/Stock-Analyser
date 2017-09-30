@@ -36,7 +36,7 @@
 # ==========================================
 
 import yqd
-yf_data = yqd.load_yahoo_quote('ABEO', '20170712', '20170725')
+yf_data = yqd.load_yahoo_quote('ABEO', '20170301', '20170830')
 print(yf_data)
 history = []
 for i,day in enumerate(yf_data[1:-1]):

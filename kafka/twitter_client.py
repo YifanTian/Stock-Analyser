@@ -16,6 +16,12 @@ import string
 import config
 import json
 
+from kafka import KafkaProducer
+import time
+
+producer = KafkaProducer(bootstrap_servers='localhost:9092')
+producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+
 def get_parser():
     """Get parser for command line arguments."""
     parser = argparse.ArgumentParser(description="Twitter Downloader")
@@ -34,16 +40,22 @@ def get_parser():
 class MyListener(StreamListener):
     """Custom StreamListener for streaming data."""
 
-    def __init__(self, data_dir, query):
-        query_fname = format_filename(query)
-        self.outfile = "%s/stream_%s.json" % (data_dir, query_fname)
+    def __init__(self, data_dir=None, query=None):
+        pass
+        # query_fname = format_filename(query)
+        # self.outfile = "%s/stream_%s.json" % (data_dir, query_fname)
 
     def on_data(self, data):
         try:
-            with open(self.outfile, 'a') as f:
-                f.write(data)
-                print(data)
-                return True
+            # with open(self.outfile, 'a') as f:
+            #     f.write(data)
+            #     print(data)
+            #     return True
+            print(data)
+            text = data[109:data.find('source')-3]
+            digist = data[60:70]
+            # producer.send('AAPL', text)
+            producer.send('AAPL', {'tweet': text, 'digist':digist})
         except BaseException as e:
             print("Error on_data: %s" % str(e))
             time.sleep(5)
@@ -86,14 +98,14 @@ def parse(cls, api, raw):
     return status
 
 if __name__ == '__main__':
-    parser = get_parser()
-    args = parser.parse_args()
+    # parser = get_parser()
+    # args = parser.parse_args()
     auth = OAuthHandler(config.consumer_key, config.consumer_secret)
     auth.set_access_token(config.access_token, config.access_secret)
     api = tweepy.API(auth)
 
-    twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
-    twitter_stream.filter(track=[args.query])
+    twitter_stream = Stream(auth, MyListener())
+    twitter_stream.filter(track=['AAPL'],languages=['en'])
 
 
 

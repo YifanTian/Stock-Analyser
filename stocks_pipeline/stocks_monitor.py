@@ -23,12 +23,15 @@ redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT)
 STOCKS_TABLE_NAME = "stocks-test1"
 db = mongodb_client.get_db()
 
+db[STOCKS_TABLE_NAME].drop()
+
 # while True:                                            # we have to update stocks hourly
 stocks_list = yahoo_api_client.getStocksFromSource()
 num_of_stocks = 0
 
 for stock in stocks_list:
-    stock_digest = hashlib.md5(stock['index'].encode('utf-8')).digest().encode('base64')
+    # stock_digest = hashlib.md5(stock['index'].encode('utf-8')).digest().encode('base64')
+    stock_digest = stock['index']
     stock['digest'] = stock_digest
     ''' redis can dedupe here '''
     print(len(stock['history']))

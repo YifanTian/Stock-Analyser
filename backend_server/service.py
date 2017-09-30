@@ -20,6 +20,10 @@ class RequestHandler(pyjsonrpc.HttpRequestHandler):
     def getStocksSummariesForUser(self, user_id, page_num):
         return operations.getStocksSummariesForUser(user_id, page_num)
 
+    @pyjsonrpc.rpcmethod
+    def getStockForUser(self, user_id, index):
+        return operations.getStockForUser(user_id, index)
+
 # Threading HTTP Server
 HTTP_SERVER = pyjsonrpc.ThreadingHttpServer(
     server_address=(SERVER_HOST, SERVER_PORT),

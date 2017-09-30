@@ -23,6 +23,14 @@ function getStocksSummariesForUser(user_id, page_num, callback) {
   });
 }
 
+function getStockForUser(user_id, index, callback) {
+  console.log(index);
+  client.request('getStockForUser', [user_id, index], function(err, error, response) {
+    if (err) throw err;
+    callback(response);
+  });
+}
+
 // Log a news click event for a user
 // function logNewsClickForUser(user_id, news_id) {
 //   client.request('logNewsClickForUser', [user_id, news_id], function(err, error, response) {
@@ -33,6 +41,7 @@ function getStocksSummariesForUser(user_id, page_num, callback) {
 
 module.exports = {
   add : add,
-  getStocksSummariesForUser : getStocksSummariesForUser
+  getStocksSummariesForUser : getStocksSummariesForUser,
+  getStockForUser: getStockForUser
 //   logNewsClickForUser : logNewsClickForUser
 };

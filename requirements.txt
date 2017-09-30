@@ -9,3 +9,4 @@ watchdog
 pandas
 yahoo-finance
 tweepy
+textblob
