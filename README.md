@@ -12,7 +12,7 @@
 
 The screen shot of the platform:
 
-![The screen shot of the platform](image.jpg)
+![Screen_Shot1.png](Screen_Shot1.png)
 
 If you like this project. Please give a star. If you have any idea about further development. Just let me know!
 
