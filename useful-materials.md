@@ -9,4 +9,4 @@
 - [Introduction-to-time-series-analysis in R](https://www.datacamp.com/courses/introduction-to-time-series-analysis)
 - [Introduction-to-time-series-analysis-in-python](https://www.datacamp.com/courses/introduction-to-time-series-analysis-in-python)
 - [Manipulating-time-series-data-in-python](https://www.datacamp.com/courses/manipulating-time-series-data-in-python)
-- [ARIMA Modeling with R] (https://www.datacamp.com/courses/arima-modeling-with-r)
+- [ARIMA Modeling with R](https://www.datacamp.com/courses/arima-modeling-with-r)
