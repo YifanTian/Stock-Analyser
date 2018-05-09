@@ -3,7 +3,7 @@
 1. The main purpose of this project in the future is providing tools for technical analysis of stocks. Including importing stocks data, charts visulization. Moving average. Candlestick pattern recognition. 
 The stock_analysis notebook contains the intial part of these content.
 The stock time series patterns and prediction of price change by LSTM(blue) compare with real(orange):
-![stock_analyser/stock_analysis.pdf](stock_analyser/stock_analysis.pdf)
+![price_chage](stock_analyser/price_chage.png)
 
 
 2. It will also include some machine learning models for time series. Inlcuding LSTM etc. 
@@ -16,7 +16,7 @@ The stock time series patterns and prediction of price change by LSTM(blue) comp
 
 The screen shot of the platform:
 
-![Screen_Shot1.png](Screen_Shot1.png)
+![Screen_Shot](Screen_Shot1.png)
 
 If you like this project. Please give a star. If you have any idea about further development. Just let me know!
 
