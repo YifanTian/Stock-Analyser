@@ -1,6 +1,6 @@
 # Stock Analyser
 ------
-1. The main purpose of this project in the future is providing tools for technical analysis of stocks. Including charts visulization. Moving average. Candlestick pattern recognition.
+1. The main purpose of this project in the future is providing tools for technical analysis of stocks. Including importing stocks data, charts visulization. Moving average. Candlestick pattern recognition. 
 
 2. It will also include some machine learning models for time series. Inlcuding LSTM etc. 
 
@@ -12,6 +12,7 @@
 
 The screen shot of the platform:
 
+![The screen shot of the platform](image.jpg)
 
 If you like this project. Please give a star. If you have any idea about further development. Just let me know!
 
