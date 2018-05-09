@@ -1,6 +1,10 @@
 # Stock Analyser
 ------
 1. The main purpose of this project in the future is providing tools for technical analysis of stocks. Including importing stocks data, charts visulization. Moving average. Candlestick pattern recognition. 
+The stock_analysis notebook contains the intial part of these content.
+The stock time series patterns and prediction of price change by LSTM(blue) compare with real(orange):
+![stock_analysis.pdf](stock_analysis.pdf)
+
 
 2. It will also include some machine learning models for time series. Inlcuding LSTM etc. 
 
